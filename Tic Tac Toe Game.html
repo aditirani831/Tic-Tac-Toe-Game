@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            background-color: #c5aeeb;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 50px;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .player-names {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .player-names input {
+            padding: 5px 10px;
+            margin: 0 10px;
+        }
+
+        .start-button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .start-button:hover {
+            background-color: #45a049;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            background-color: #e0e0e0;
+            color: #333;
+            font-size: 40px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cell:hover {
+            background-color: #ccc;
+        }
+
+        .cell.x {
+            color: #f44336;
+        }
+
+        .cell.o {
+            color: #2196f3;
+        }
+
+        #message {
+            color: #333;
+            font-size: 18px;
+        }
+
+        .win-message {
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        .draw-message {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+
+    <div class="game-container">
+        <div class="player-names">
+            <input type="text" id="player1" placeholder="Player 1">
+            <input type="text" id="player2" placeholder="Player 2">
+        </div>
+
+        <button class="start-button" onclick="startGame()">Start Game</button>
+
+        <div id="board"></div>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        var player1, player2;
+        var currentPlayer;
+        var board = [
+            ["", "", ""],
+            ["", "", ""],
+            ["", "", ""]
+        ];
+
+        function startGame() {
+            player1 = document.getElementById("player1").value;
+            player2 = document.getElementById("player2").value;
+
+            if (player1 === "" || player2 === "") {
+                alert("Please enter names for both players.");
+                return;
+            }
+
+            var startButton = document.querySelector(".start-button");
+            startButton.style.display = "none";
+
+            currentPlayer = "X";
+            document.getElementById("message").textContent = player1 + "'s turn";
+
+            var boardElement = document.getElementById("board");
+            for (var row = 0; row < 3; row++) {
+                for (var col = 0; col < 3; col++) {
+                    var cell = document.createElement("div");
+                    cell.className = "cell";
+                    cell.setAttribute("data-row", row);
+                    cell.setAttribute("data-col", col);
+                    cell.onclick = makeMove;
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+
+        function makeMove() {
+            var row = parseInt(this.getAttribute("data-row"));
+            var col = parseInt(this.getAttribute("data-col"));
+
+            if (board[row][col] === "") {
+                board[row][col] = currentPlayer;
+                this.textContent = currentPlayer;
+                this.classList.add(currentPlayer.toLowerCase());
+
+                if (checkWin()) {
+                    document.getElementById("message").innerHTML = '<span class="win-message">' + (currentPlayer === "X" ? player1 : player2) + ' wins!</span>';
+                    disableBoard();
+                } else if (checkDraw()) {
+                    document.getElementById("message").innerHTML = '<span class="draw-message">It\'s a draw!</span>';
+                    disableBoard();
+                } else {
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+                    document.getElementById("message").textContent = (currentPlayer === "X" ? player1 : player2) + "'s turn";
+                }
+            }
+        }
+
+        function checkWin() {
+            for (var i = 0; i < 3; i++) {
+                if (
+                    board[i][0] === currentPlayer &&
+                    board[i][1] === currentPlayer &&
+                    board[i][2] === currentPlayer
+                ) {
+                    return true;
+                }
+                if (
+                    board[0][i] === currentPlayer &&
+                    board[1][i] === currentPlayer &&
+                    board[2][i] === currentPlayer
+                ) {
+                    return true;
+                }
+            }
+            if (
+                board[0][0] === currentPlayer &&
+                board[1][1] === currentPlayer &&
+                board[2][2] === currentPlayer
+            ) {
+                return true;
+            }
+            if (
+                board[2][0] === currentPlayer &&
+                board[1][1] === currentPlayer &&
+                board[0][2] === currentPlayer
+            ) {
+                return true;
+            }
+            return false;
+        }
+
+        function checkDraw() {
+            for (var row = 0; row < 3; row++) {
+                for (var col = 0; col < 3; col++) {
+                    if (board[row][col] === "") {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function disableBoard() {
+            var cells = document.getElementsByClassName("cell");
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].onclick = null;
+            }
+        }
+    </script>
+</body>
+</html>
